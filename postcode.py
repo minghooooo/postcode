@@ -28,14 +28,18 @@ def mkdir(path):
         return False
 
 def parse_state(html):
-    pattern = re.compile('<a.*?dropdown.*?href="#">(.*?)<span.*?caret(.*?)</ul>',re.S)#state's name&whole part of the countries in it.
-    states = re.findall(pattern,html)
+    pattern0 = re.compile('<a.*?dropdown.*?href="#">(.*?)<span.*?caret(.*?)</ul>',re.S)#state's name&whole part of the countries in it.
+    states = re.findall(pattern0,html)
     states_n = np.array(states)[0:5]#translate to narray
     # states_n =states_n[0:5,:]#keep the important info
     for s in states_n:
         file_path_state='D:\TMH\g_postcode\\'+ s[0]
         print(file_path_state)
         # print(s[0])
+
+        #open the file of one state
+        #into the file
+        #use a method to new a file of one of the country in the state
     pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)#countries and its urls.
     states_s =str(states)#to string
     countries = re.findall(pattern1,states_s)
@@ -48,13 +52,13 @@ def parse_state(html):
     #         'state_name':s[0],
     #         'country_url':s[1]
     #     }
-
+    
 
 if __name__ == "__main__":
     url = 'https://www.nowmsg.com/'
     html = getHTMl(url)
     # print(html)
-    write_to_file(html)
+    # write_to_file(html)
     parse_state(html)
 
 
