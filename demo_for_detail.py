@@ -1,6 +1,7 @@
 import requests
 import re
 import numpy as np
+import csv
 #try to into province 1
 
 
@@ -16,7 +17,7 @@ def getHTMl(url):
 
 
 def write_to_file(content):
-    with open('D:\TMH\g_postcode\detail.txt','a',encoding='UTF-8') as f:
+    with open('D:\TMH\Global_postcode\detail.txt','a',encoding='UTF-8') as f:
         f.write(content)
 
 
@@ -27,6 +28,11 @@ def parse_state(html):
     print(type(details))
     print(len(details))
     print(details)
+    with open('d.csv','w',encoding='utf-8-sig',newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['邮编','地名','乡/村/社区','县/郡','州/市','纬度','经度'])
+        writer.writerow(details)
+   
 
 
 
@@ -34,5 +40,5 @@ if __name__ == "__main__":
     url = 'https://www.nowmsg.com/findzip/postal_code.asp?country=DE&state=Baden-W%C3%BCrttemberg&county=Freiburg%20Region&city=Aach'
     html = getHTMl(url)
     # print(html)
-    write_to_file(html)
+    # write_to_file(html)
     parse_state(html)
