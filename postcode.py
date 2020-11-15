@@ -15,6 +15,21 @@ def getHTMl(url):
         return resp.text
     return 0
 
+#测试链接使用的函数
+def Code_getHTMl(url):
+    headers = {
+        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'
+    }
+    resp = requests.get(url,headers = headers)
+    if resp.status_code != 200:
+        resp.encoding = 'UTF-8'
+        write_to_file(resp.text)
+        print(resp.status_code)
+
+
+
+
+
 def write_to_file(content):
     with open('D:\TMH\g_postcode\Homepage.txt','a',encoding='UTF-8') as f:
         f.write(content)
@@ -35,30 +50,35 @@ def parse_state(html):
     states_n = np.array(states)[0:5] #translate to nparray
     # states_n =states_n[0:5,:]#keep the important info
     state_count = 0
+    soup0 = BeautifulSoup(html,'lxml')
+    uls = soup0.find_all(name = 'ul',attrs ={'class':'dropdown-menu'}) #五个洲所有的li的集合
+    uls = str(uls).replace('&quot;','\"').replace('\t','').replace('\n','').replace('\r','')
+    #从五个大洲的ul里分割出每一个洲的国家
+    pattern1 = re.compile('<ul.*?</ul>',re.S) #可以成功分开5个大洲的ul
+    uls = re.findall(pattern1,uls)
+    uls = uls[0:5]
     for s in states_n:
         state_count = state_count +1
         file_path_state='D:\TMH\Global_postcode\\'+ s[0]
         # print(file_path_state)
         # print(s[0])
         mkdir(file_path_state)
-        soup0 = BeautifulSoup(html,'lxml')
-        uls = soup0.find_all(name = 'ul',attrs ={'class':'dropdown-menu'}) #五个洲所有的li的集合
-        uls = str(uls).replace('&quot;','\"').replace('\t','').replace('\n','').replace('\r','')
-        
-        
-        #从五个大洲的ul里分割出每一个洲的国家
-        pattern1 = re.compile('<ul.*?</ul>',re.S) #可以成功分开5个大洲的ul
-        uls = re.findall(pattern1,uls)
-        uls = uls[0:5]
-        print(uls)
-        
-        
+        # print(uls[state_count - 1])
+        ul = uls[state_count - 1]
         print('++++++++++')
+        #开始创建每个国家的文件夹！
+        pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)
+        countries = re.findall(pattern1,ul)
+        for country in countries:
+            country_name = country[1]
+            country_name = str(country_name).replace('邮编','').replace('查询','')
+            file_path_state_country = file_path_state + '\\' + country_name
+            mkdir(file_path_state_country)
+            Code_getHTMl(country[0])
+            #打开第x个国家的网站
+            
     
-            # pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)
-            # country = re.findall(pattern1,ul)
-            # print(country)
-            # print('++++++++++++++++')
+
         # os.startfile(file_path_state) #模拟打开文件夹操作
         
 
