@@ -1,7 +1,9 @@
 import requests
 import re
 import os
+import csv
 import numpy as np
+from bs4 import BeautifulSoup
 
 def getHTMl(url):
     headers = {
@@ -30,23 +32,54 @@ def mkdir(path):
 def parse_state(html):
     pattern0 = re.compile('<a.*?dropdown.*?href="#">(.*?)<span.*?caret(.*?)</ul>',re.S)#state's name&whole part of the countries in it.
     states = re.findall(pattern0,html)
-    states_n = np.array(states)[0:5]#translate to narray
+    states_n = np.array(states)[0:5] #translate to nparray
     # states_n =states_n[0:5,:]#keep the important info
+    state_count = 0
     for s in states_n:
-        file_path_state='D:\TMH\g_postcode\\'+ s[0]
-        print(file_path_state)
+        state_count = state_count +1
+        file_path_state='D:\TMH\Global_postcode\\'+ s[0]
+        # print(file_path_state)
         # print(s[0])
+        mkdir(file_path_state)
+        soup0 = BeautifulSoup(html,'lxml')
+        uls = soup0.find_all(name = 'ul',attrs ={'class':'dropdown-menu'}) #五个洲所有的li的集合
+        uls = str(uls).replace('&quot;','\"').replace('\t','').replace('\n','').replace('\r','')
+        
+        
+        #从五个大洲的ul里分割出每一个洲的国家
+        pattern1 = re.compile('<ul.*?</ul>',re.S) #可以成功分开5个大洲的ul
+        uls = re.findall(pattern1,uls)
+        uls = uls[0:5]
+        print(uls)
+        
+        
+        print('++++++++++')
+    
+            # pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)
+            # country = re.findall(pattern1,ul)
+            # print(country)
+            # print('++++++++++++++++')
+        # os.startfile(file_path_state) #模拟打开文件夹操作
+        
+
+
 
         #open the file of one state
         #into the file
         #use a method to new a file of one of the country in the state
-    pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)#countries and its urls.
-    states_s =str(states)#to string
-    countries = re.findall(pattern1,states_s)
-    countries_n = np.array(countries)[:-9]
-    # countries_n = np.delete(countries_n,[:-8],axis=0)#?
-    for c in countries_n:
-        print(c)
+
+
+
+
+    #第一次注释
+    # pattern1 = re.compile('<li><a.*?href="(.*?)">(.*?)</a></li>',re.S)#countries and its urls.
+    # states_s =str(states)#to string
+    # countries = re.findall(pattern1,states_s)
+    # countries_n = np.array(countries)[:-9]
+    # # countries_n = np.delete(countries_n,[:-8],axis=0)#?
+    # for c in countries_n:
+    #     print(c)
+
     # for s in states:
     #     yeild{
     #         'state_name':s[0],
